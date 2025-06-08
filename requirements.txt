@@ -1,0 +1,11 @@
+langchain
+langchain_core
+langchain-community
+pypdf
+pinecone
+python-dotenv
+
+
+
+
+
