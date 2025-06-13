@@ -85,3 +85,12 @@ langchain_community
 scikit-learn
 pypdf
 langchain_pinecone
+unstructured
+pdfminer
+unstructured[pdf]
+langchain==0.1.14
+langchain-community==0.0.29
+unstructured[pdf]==0.10.25
+PyMuPDF==1.23.0
+tqdm
+
