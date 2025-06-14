@@ -19,6 +19,8 @@ class SupervisorNode:
         self.config = ConfigEntity()
 
     def classify_request(self, state: AgentState):
+        print(f"[SupervisorNode.classify_request]:START: {state}")
+
         question = state['messages'][0]
 
         template = """
@@ -48,9 +50,26 @@ class SupervisorNode:
 
         state = {
             'messages': [SystemMessage(content=response.Topic)],
-            'validation_passed': False,
-            'last_route': state.get('last_route', ''),
+            'validation_passed': state.get('validation_passed', ''),
+            'last_route': response.Topic.strip().lower(),
             'retry_count': state.get('retry_count', 0)
         }
 
+        print(f"[SupervisorNode.classify_request]:END: {state}")
+
         return state
+
+    def get_route(self, state: AgentState) -> str:
+        try:
+            print(f"[SupervisorNode.get_route]:START: {state}")
+
+            next_node = state['messages'][-1].content  # e.g., "llm"
+            state['last_route'] = next_node
+
+            print(f"next_node: {next_node}")
+            print(f"[SupervisorNode.get_route]:END: {state}")
+
+            return next_node.strip().lower()
+        except Exception as e:
+            raise ValueError(f"Error extracting route from state: {e}")
+

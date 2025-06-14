@@ -15,7 +15,7 @@ class RAGNode:
         self.config = ConfigEntity()
 
     def format_doc(self, docs):
-        return '\n\n'.join(doc for doc in docs)
+        return '\n\n'.join(doc.page_content for doc in docs)
 
     def rag_response(self, state: AgentState):
         try:
@@ -37,7 +37,7 @@ class RAGNode:
             response = rag_chain.invoke(question)
 
             state = {
-                     'messages': [SystemMessage(content=response.content)],
+                     'messages': [SystemMessage(content=response.answer)],
                      'validation_passed': False,
                      'last_route': 'rag',
                      'retry_count': 0

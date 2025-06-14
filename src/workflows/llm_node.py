@@ -11,6 +11,8 @@ class LLMNode:
 
     def llm_response(self, state: AgentState):
         try:
+            print(f"[LLMNode.llm_response]:START: {state}")
+
             question = state['messages'][0].content
 
             model = ChatGoogleGenerativeAI(model=self.config.google_inference_LLM)
@@ -19,10 +21,12 @@ class LLMNode:
 
             state = {
                      'messages': [SystemMessage(content=response.content)],
-                     'validation_passed': False,
+                     'validation_passed': state.get('validation_passed', ''),
                      'last_route': 'llm',
                      'retry_count': 0
                      }
+
+            print(f"[LLMNode.llm_response]:END: {state}")
 
             return state
 

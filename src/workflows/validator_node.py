@@ -8,23 +8,42 @@ class ValidationNode:
     def __init__(self):
         self.config = ConfigEntity()
 
-    def validation_response(self, state: AgentState):
-        try:
-            retry_count = state.get("retry_count", 0)
+    def route_validation(self, state: AgentState) -> str:
+        return "pass" if state.get("validation_passed") else "fail"
 
-            is_valid = True
+    def validation_router(self, state: AgentState) -> AgentState:
+        print(f"[ValidationNode.validation_router]: START: {state}")
 
-            state = {
-                'messages': [SystemMessage(content='validation passed')],
-                'validation_passed': is_valid,
-                'last_route': state.get('last_route', ''),
-                'retry_count': state.get('retry_count', retry_count)
-            }
+        # Get retry count
+        retry_count = state.get("retry_count", 0)
 
-            return state
+        # Custom validation logic here
+        is_valid = self.some_validation(state)  # your actual logic
+        state["validation_passed"] = is_valid
 
-        except Exception as e:
-            raise e
+        # Update retry count if failed
+        if not is_valid:
+            retry_count += 1
+            state["retry_count"] = retry_count
+            if retry_count >= 3:  # 💥 Break loop after 3 retries
+                print("Max retries exceeded.")
+                state["validation_passed"] = True  # Treat as valid or trigger alternate exit
+                state["messages"].append(SystemMessage(content="Max retries hit. Forcing pass."))
+        else:
+            state["retry_count"] = 0  # reset on success
 
-    def route_validation(self, state: AgentState):
-        return 'pass' if state.get('validation_passed', '') == 'pass' else 'fail'
+        print(f"[ValidationNode.validation_router]: validation_passed={state['validation_passed']}, retry_count={retry_count}")
+        return state
+
+    def some_validation(self, state: AgentState) -> bool:
+        last_msg = state["messages"][-1]
+        if not isinstance(last_msg, SystemMessage):
+            return False
+        response = last_msg.content
+
+        # Example: basic sanity checks
+        return (
+                len(response.strip()) > 20 and
+                not response.strip().endswith("...") and
+                "error" not in response.lower()
+        )

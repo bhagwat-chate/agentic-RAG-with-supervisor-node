@@ -5,6 +5,6 @@ import operator
 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
-    validation_passed: bool
-    last_route: str
-    retry_count: int
+    validation_passed: bool = False
+    last_route: str = ''
+    retry_count: int = 0

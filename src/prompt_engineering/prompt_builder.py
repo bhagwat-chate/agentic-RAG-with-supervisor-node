@@ -6,8 +6,7 @@ from src.models.agent_state import AgentState
 
 
 class TopicSelectionParser(BaseModel):
-    Topic: str = Field(description='selected topic')
-    Reasoning: str = Field(description='Reasoning behind the topic selection')
+    answer: str
 
 
 class PromptBuilder:
@@ -15,9 +14,6 @@ class PromptBuilder:
     def __init__(self, retriever):
         self.retriever = retriever
         self.config = ConfigEntity()
-
-    def format_doc(self, docs):
-        return '\n\n'.join(doc for doc in docs)
 
     def build(self, state: AgentState):
         try:
@@ -34,21 +30,7 @@ class PromptBuilder:
                                 question:
                                 {question}
                             """)
-            # question = state['messages'][0].content
-            # model = ChatGoogleGenerativeAI(self.config.google_inference_LLM)
-            # parser = PydanticOutputParser(pydantic_object=TopicSelectionParser)
-            #
-            # rag_chain = ({'context': self.retriever | self.format_doc, 'question': RunnablePassthrough()}
-            #              | prompt
-            #              | model
-            #              | parser)
-            # response = rag_chain.invoke(question)
 
-            # state = {'messages': [SystemMessage(content=response.answer)],
-            #          'validation_passed': state.get('validation_passed', ''),
-            #          'last_route': state.get('last_route', ''),
-            #          'retry_count': state.get('retry_count', 0)
-            #          }
             return prompt
 
         except Exception as e:
