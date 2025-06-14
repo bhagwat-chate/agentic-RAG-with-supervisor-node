@@ -7,7 +7,6 @@ from src.workflows.rag_node import RAGNode
 from src.workflows.validator_node import ValidationNode
 from src.workflows.web_node import WebNode
 from src.workflows.supervisor_node import SupervisorNode
-from src.router.router import Router
 from src.models.agent_state import AgentState
 
 
@@ -47,7 +46,7 @@ class BuildGraph:
 
         workflow.add_conditional_edges(
             'validation_router',
-            validation_node_obj.route_validation,  # ✅ correct function returning "pass"/"fail"
+            validation_node_obj.route_validation,
             {'pass': END, 'fail': 'supervisor'}
         )
 

@@ -47,8 +47,3 @@ class RAGService:
 
         except Exception as e:
             raise e
-
-
-if __name__ == '__main__':
-    rag_service_obj = RAGService()
-    rag_service_obj.run_rag_pipeline()

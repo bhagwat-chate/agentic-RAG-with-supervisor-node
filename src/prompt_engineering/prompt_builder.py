@@ -1,7 +1,6 @@
 from langchain.prompts import PromptTemplate
 from config.config_entity import ConfigEntity
 from pydantic import BaseModel
-from pydantic import Field
 from src.models.agent_state import AgentState
 
 
