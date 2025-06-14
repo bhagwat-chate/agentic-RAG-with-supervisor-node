@@ -1,11 +1,11 @@
-from src.workflows.graph_builder import AgentState
+from src.models.agent_state import AgentState
 from langchain_core.messages import SystemMessage
 from langchain_community.tools import DuckDuckGoSearchRun
 
 
 class WebNode:
 
-    def web_node(self, state: AgentState):
+    def web_response(self, state: AgentState):
         try:
             question = state['messages'][0].content
 

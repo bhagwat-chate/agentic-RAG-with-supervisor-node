@@ -2,11 +2,11 @@ import os
 
 from config.config_entity import ConfigEntity
 
+from src.handlers.vectorstore.pinecone_loader import PineconeLoader
+from src.handlers.vectorstore.retriever_builder import RetrieverBuilder
 from src.handlers.loaders.pdf_loader import PDFLoaderHandler
 from src.handlers.chunking.text_splitter import TextSplitter
 from src.llm_clients.embedding.google_embedder import GoogleEmbedder
-from src.handlers.vectorstore.pinecone_loader import PineconeLoader
-from src.handlers.vectorstore.retriever_builder import RetrieverBuilder
 from src.prompt_engineering.prompt_builder import PromptBuilder
 
 import warnings

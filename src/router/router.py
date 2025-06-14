@@ -1,4 +1,4 @@
-from src.workflows.graph_builder import AgentState
+from src.models.agent_state import AgentState
 from langchain_core.messages import SystemMessage
 
 
