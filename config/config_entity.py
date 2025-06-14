@@ -22,7 +22,7 @@ class ConfigEntity:
         self.pc_index_metric = os.getenv('PINECONE_INDEX_METRIC', '')
         self.doc_chunk_size = int(os.getenv('DOCUMENT_CHUNK_SIZE', ''))
         self.doc_overlap_size = int(os.getenv('DOCUMENT_OVERLAP_SIZE', ''))
-
+        self.pc_retriever_top_k = os.getenv('DOCUMENT_RETRIEVER_TOP_K', '')
 
 
 

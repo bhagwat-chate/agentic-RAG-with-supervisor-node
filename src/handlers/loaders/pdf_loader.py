@@ -14,8 +14,7 @@ class PDFLoaderHandler:
                 raise FileNotFoundError(f"❌ File not found: {self.file_path}")
 
             loader = PyPDFLoader(self.file_path)
-            pdf_documents = loader.load()[12:]
-            print(f"✅ Loaded {len(pdf_documents)} pages from {self.file_path}")
+            pdf_documents = loader.load()[12:20]
 
             pdf_corpus = ''
             for page in pdf_documents:

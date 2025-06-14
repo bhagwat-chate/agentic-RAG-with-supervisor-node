@@ -1,16 +1,14 @@
 import os
-from typing import List
 from config.config_entity import ConfigEntity
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-from pinecone import Pinecone, ServerlessSpec
-from langchain_pinecone import PineconeVectorStore
 from src.handlers.loaders.pdf_loader import PDFLoaderHandler
 from src.handlers.chunking.text_splitter import TextSplitter
-from uuid import uuid4
+from src.llm_clients.embedding.google_embedder import GoogleEmbedder
+from src.handlers.vectorstore.pinecone_loader import PineconeLoader
+from src.handlers.vectorstore.retriever_builder import RetrieverBuilder
+
+import warnings
+warnings.filterwarnings('ignore')
 
 
 class RAGService:
@@ -23,49 +21,23 @@ class RAGService:
         try:
             pdf_loader_obj = PDFLoaderHandler(file_path=self.file_path)
             text = pdf_loader_obj.load_corpus()
+            print('✅ complete: data load')
 
             text_splitter_obj = TextSplitter(corpus_str=text)
             chunks_lst = text_splitter_obj.split()
+            print('✅ complete: text clean and split')
 
-        except Exception as e:
-            raise e
+            google_embeder_obj = GoogleEmbedder()
+            document_lst, embedding_lst, google_embedding = google_embeder_obj.embed(chunks=chunks_lst)
+            print('✅ complete: google embedding')
 
-    def embed_documents(self, chunks: List[str]) -> None:
-        try:
-            embeddings_google = GoogleGenerativeAIEmbeddings(model=self.config_entity.google_embedding_model)
-            doc_embeddings = embeddings_google.embed_documents(chunks)
-            embedding_dimension = len(doc_embeddings[0])
-            print(f'✅ documents embeddings created, len of embedding: {len(doc_embeddings[11])}')
+            pinecone_loader_obj = PineconeLoader()
+            pinecone_loader_obj.store(chunks=chunks_lst, document_lst=document_lst, embedding_lst=embedding_lst, embedding_obj=google_embedding)
+            print('✅ complete: embedding load into vector store (pinecone)')
 
-            pc = Pinecone(api_key=self.config_entity.pc_api_key, environment=self.config_entity.pc_index_cloud_region)
-
-            if not pc.has_index(self.config_entity.pc_index):
-                pc.create_index(name=self.config_entity.pc_index,
-                                dimension=embedding_dimension,
-                                metric=self.config_entity.pc_index_metric.lower(),
-                                spec=ServerlessSpec(cloud=self.config_entity.pc_cloud_vendor, region=self.config_entity.pc_index_cloud_region)
-                                )
-            pc_index = pc.Index(self.config_entity.pc_index)
-
-            pc_vector_space = PineconeVectorStore(index=pc_index, embedding=embeddings_google)
-
-            uuids = [str(uuid4()) for _ in range(len(doc_embeddings))]
-
-            batch_size = 500
-            start = 0
-            end = batch_size
-
-            chunks_doc = [Document(page_content=page, metadata={'page': idx+1}) for idx, page in enumerate(chunks)]
-            while start < len(chunks_doc):
-                if end > len(chunks_doc):
-                    end = len(chunks_doc)
-
-                pc_vector_space.add_documents(documents=chunks_doc[start:end], ids=uuids[start:end])
-
-                start = end
-                end = end + batch_size
-
-            print(f'✅ loaded docs {len(chunks_doc)}')
+            retriever_builder_obj = RetrieverBuilder()
+            retriever = retriever_builder_obj.build()
+            print('✅ complete: retriever created')
 
         except Exception as e:
             raise e
@@ -73,9 +45,7 @@ class RAGService:
 
 if __name__ == '__main__':
     rag_service_obj = RAGService()
-    pdf_corpus = rag_service_obj.run_rag_pipeline()
-    # chunks = rag_service_obj.clean_and_split(pdf_corpus)
-    # rag_service_obj.embed_documents(chunks)
+    rag_service_obj.run_rag_pipeline()
 
     print('done')
 

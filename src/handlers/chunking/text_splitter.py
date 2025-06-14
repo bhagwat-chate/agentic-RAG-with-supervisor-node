@@ -18,8 +18,6 @@ class TextSplitter:
                                                            separators=['\n\n', '\n', '.', ' '])
             chunks = text_splitter.split_text(self.corpus_str)
 
-            print(f'✅ corpus split into {len(chunks)} chunks')
-
             return chunks
 
         except Exception as e:

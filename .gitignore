@@ -2,3 +2,4 @@
 .idea
 venv
 poc.ipynb
+__pycache__
