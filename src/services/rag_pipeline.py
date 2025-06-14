@@ -1,4 +1,5 @@
 import os
+
 from config.config_entity import ConfigEntity
 
 from src.handlers.loaders.pdf_loader import PDFLoaderHandler

@@ -23,6 +23,7 @@ class SupervisorNode:
 
         template = """
                     You are a classification agent. Classify the following user question into one of the three following category ONLY: [rag, web, llm].
+                    
                     **Definitions:**
                     - rag: The question can be better answered using retrival from external knowledge or documents.
                     - web: The question required fresh or current information from the internet.
