@@ -6,6 +6,7 @@ from src.handlers.chunking.text_splitter import TextSplitter
 from src.llm_clients.embedding.google_embedder import GoogleEmbedder
 from src.handlers.vectorstore.pinecone_loader import PineconeLoader
 from src.handlers.vectorstore.retriever_builder import RetrieverBuilder
+from src.prompt_engineering.prompt_builder import PromptBuilder
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -38,6 +39,10 @@ class RAGService:
             retriever_builder_obj = RetrieverBuilder()
             retriever = retriever_builder_obj.build()
             print('✅ complete: retriever created')
+
+            prompt_builder_obj = PromptBuilder(retriever)
+            prompt_builder_obj.build()
+            print('✅ complete: prompt creation')
 
         except Exception as e:
             raise e
