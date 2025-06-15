@@ -18,12 +18,11 @@ It is built using **LangGraph**, **LangChain**, **Gemini 1.5 Flash**, and **Pine
 - 💾 **Pinecone Vector Store:** Stores and retrieves embeddings for RAG via Google GenAI embeddings.
 
 ---
-
 ## 🧱 Architecture Overview
 
-```mermaid
-## 🔁 Agentic RAG Workflow
-
-![Agentic Graph Architecture](./docs/images/agentic_graph.png)
-```
+<p align="center">
+  <img src="./docs/images/agentic_graph.png" width="500" alt="Agentic Graph Architecture"/>
+  <br/>
+  <i>Figure: Modular agentic workflow combining Supervisor, RAG, Web, LLM, and Validation Router</i>
+</p>
 
