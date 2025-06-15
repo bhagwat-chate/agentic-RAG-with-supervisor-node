@@ -14,6 +14,7 @@ class ConfigEntity:
 
             self.llm_temperature = os.getenv('LLM_TEMPERATURE', '')
             self.llm_top_p = os.getenv('LLM_TOP_P', '')
+            self.max_llm_retries = int(os.getenv('LLM_MAX_RETRIES', 0))
 
             self.pc_index = os.getenv('PINECONE_INDEX_NAME', '')
             self.pc_namespace = os.getenv('PINECONE_NAMESPACE', '')

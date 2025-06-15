@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 class BuildGraph:
 
-    def __init__(self, state: AgentState):
-        self.state = state
+    # def __init__(self, state: AgentState):
+    #     self.state = state
 
     def build_graph(self):
         try:

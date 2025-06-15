@@ -27,3 +27,7 @@ def main():
     except Exception as e:
         logger.exception(f" ERROR: {e}")
         raise e
+
+
+if __name__ == '__main__':
+    main()

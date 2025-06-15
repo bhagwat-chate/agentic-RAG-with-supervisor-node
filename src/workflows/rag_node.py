@@ -31,7 +31,7 @@ class RAGNode:
             retriever = RetrieverBuilder().build()
             prompt_builder_obj = PromptBuilder(retriever)
 
-            prompt = prompt_builder_obj.build(state)
+            prompt = prompt_builder_obj.build()
 
             model = ChatGoogleGenerativeAI(model=self.config.google_inference_LLM)
 

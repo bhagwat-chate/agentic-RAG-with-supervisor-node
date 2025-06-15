@@ -25,7 +25,7 @@ def run_agentic_workflow():
         }
 
         try:
-            app = BuildGraph(state).build_graph()
+            app = BuildGraph().build_graph()
             output = app.stream(state)
 
             for event in output:

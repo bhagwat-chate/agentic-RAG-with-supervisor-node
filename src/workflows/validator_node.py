@@ -32,7 +32,7 @@ class ValidationNode:
             if not is_valid:
                 retry_count += 1
                 state["retry_count"] = retry_count
-                if retry_count >= 3:  # 💥 Break loop after 3 retries
+                if retry_count >= self.config.max_llm_retries:  # 💥 Break loop after 3 retries
                     print("Max retries exceeded.")
                     state["validation_passed"] = True  # Treat as valid or trigger alternate exit
                     state["messages"].append(SystemMessage(content="Max retries hit. Forcing pass."))

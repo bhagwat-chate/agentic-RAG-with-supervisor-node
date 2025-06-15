@@ -17,7 +17,7 @@ class PromptBuilder:
         self.retriever = retriever
         self.config = ConfigEntity()
 
-    def build(self, state: AgentState):
+    def build(self):
         try:
             logger.info(EXECUTION_START)
 
