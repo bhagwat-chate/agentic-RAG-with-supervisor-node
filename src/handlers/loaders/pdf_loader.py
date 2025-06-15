@@ -1,6 +1,9 @@
 import os
 from langchain.document_loaders import PyPDFLoader
 from config.config_entity import ConfigEntity
+from src.constant.constant import *
+import logging
+logger = logging.getLogger(__name__)
 
 
 class PDFLoaderHandler:
@@ -10,6 +13,8 @@ class PDFLoaderHandler:
 
     def load_corpus(self) -> str:
         try:
+            logger.info(EXECUTION_START)
+
             if not os.path.exists(self.file_path):
                 raise FileNotFoundError(f"❌ File not found: {self.file_path}")
 
@@ -20,6 +25,10 @@ class PDFLoaderHandler:
             for page in pdf_documents:
                 pdf_corpus = pdf_corpus + page.page_content
 
+            logger.info(EXECUTION_END)
+
             return pdf_corpus
+
         except Exception as e:
+            logger.exception(f"{e}")
             raise e

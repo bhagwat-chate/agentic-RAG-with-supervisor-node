@@ -6,11 +6,18 @@ from pydantic import Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 from config.config_entity import ConfigEntity
 from langchain_core.messages import SystemMessage
+from src.constant.constant import *
+import logging
+logger = logging.getLogger(__name__)
 
 
 class TopicSelectionParser(BaseModel):
+    logger.info(EXECUTION_START)
+
     Topic: str = Field(description='Topic selected')
     Reasoning: str = Field(description='The reasoning behind the topic selection')
+
+    logger.info(EXECUTION_END)
 
 
 class SupervisorNode:
@@ -19,57 +26,62 @@ class SupervisorNode:
         self.config = ConfigEntity()
 
     def classify_request(self, state: AgentState):
-        print(f"[SupervisorNode.classify_request]:START: {state}")
+        try:
+            logger.info(EXECUTION_START)
 
-        question = state['messages'][0]
+            question = state['messages'][0]
 
-        template = """
-                    You are a classification agent. Classify the following user question into one of the three following category ONLY: [rag, web, llm].
-                    
-                    **Definitions:**
-                    - rag: The question can be better answered using retrival from external knowledge or documents.
-                    - web: The question required fresh or current information from the internet.
-                    - llm: The question can be answered by the language model's own reasoning or general knowledge.
-                    
-                    You must answer with exactly one word: either rag, llm, or web.
-                    
-                    User question: {question}
-                    {format_instructions}
-                    """
-        parser = PydanticOutputParser(pydantic_object=TopicSelectionParser)
+            template = """
+                        You are a classification agent. Classify the following user question into one of the three following category ONLY: [rag, web, llm].
+                        
+                        **Definitions:**
+                        - rag: The question can be better answered using retrival from external knowledge or documents.
+                        - web: The question required fresh or current information from the internet.
+                        - llm: The question can be answered by the language model's own reasoning or general knowledge.
+                        
+                        You must answer with exactly one word: either rag, llm, or web.
+                        
+                        User question: {question}
+                        {format_instructions}
+                        """
+            parser = PydanticOutputParser(pydantic_object=TopicSelectionParser)
 
-        prompt = PromptTemplate(template=template,
-                                input_variables=['question'],
-                                partial_variables={'format_instructions': parser.get_format_instructions()}
-                                )
-        model = ChatGoogleGenerativeAI(model=self.config.google_inference_LLM)
+            prompt = PromptTemplate(template=template,
+                                    input_variables=['question'],
+                                    partial_variables={'format_instructions': parser.get_format_instructions()}
+                                    )
+            model = ChatGoogleGenerativeAI(model=self.config.google_inference_LLM)
 
-        chain = prompt | model | parser
+            chain = prompt | model | parser
 
-        response = chain.invoke({'question': question})
+            response = chain.invoke({'question': question})
 
-        state = {
-            'messages': [SystemMessage(content=response.Topic)],
-            'validation_passed': state.get('validation_passed', ''),
-            'last_route': response.Topic.strip().lower(),
-            'retry_count': state.get('retry_count', 0)
-        }
+            state = {
+                'messages': [SystemMessage(content=response.Topic)],
+                'validation_passed': state.get('validation_passed', ''),
+                'last_route': response.Topic.strip().lower(),
+                'retry_count': state.get('retry_count', 0)
+            }
 
-        print(f"[SupervisorNode.classify_request]:END: {state}")
+            logger.info(EXECUTION_END)
 
-        return state
+            return state
+
+        except Exception as e:
+            raise e
 
     def get_route(self, state: AgentState) -> str:
         try:
-            print(f"[SupervisorNode.get_route]:START: {state}")
+            logger.info(EXECUTION_START)
 
-            next_node = state['messages'][-1].content  # e.g., "llm"
+            next_node = state['messages'][-1].content
             state['last_route'] = next_node
+            result = next_node.strip().lower()
 
-            print(f"next_node: {next_node}")
-            print(f"[SupervisorNode.get_route]:END: {state}")
+            logger.info(EXECUTION_END)
 
-            return next_node.strip().lower()
+            return result
+
         except Exception as e:
             raise ValueError(f"Error extracting route from state: {e}")
 

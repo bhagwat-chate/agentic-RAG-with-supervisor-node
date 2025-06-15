@@ -2,6 +2,9 @@ from config.config_entity import ConfigEntity
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from uuid import uuid4
+from src.constant.constant import *
+import logging
+logger = logging.getLogger(__name__)
 
 
 class PineconeLoader:
@@ -10,6 +13,8 @@ class PineconeLoader:
 
     def store(self, chunks, document_lst, embedding_lst, embedding_obj):
         try:
+            logger.info(EXECUTION_START)
+
             embedding_dimension = len(embedding_lst[0])
 
             pc = Pinecone(api_key=self.config_entity.pc_api_key, environment=self.config_entity.pc_index_cloud_region)
@@ -42,5 +47,8 @@ class PineconeLoader:
                 start = end
                 end = end + batch_size
 
+            logger.info(EXECUTION_END)
+
         except Exception as e:
+            logger.exception(f"{e}")
             raise e

@@ -2,6 +2,9 @@ from src.models.agent_state import AgentState
 from langchain_core.messages import SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from config.config_entity import ConfigEntity
+from src.constant.constant import *
+import logging
+logger = logging.getLogger(__name__)
 
 
 class LLMNode:
@@ -11,7 +14,7 @@ class LLMNode:
 
     def llm_response(self, state: AgentState):
         try:
-            print(f"[LLMNode.llm_response]:START: {state}")
+            logger.info(EXECUTION_START)
 
             question = state['messages'][0].content
 
@@ -26,7 +29,7 @@ class LLMNode:
                      'retry_count': 0
                      }
 
-            print(f"[LLMNode.llm_response]:END: {state}")
+            logger.info(EXECUTION_END)
 
             return state
 

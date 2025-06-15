@@ -7,6 +7,9 @@ from src.prompt_engineering.prompt_builder import PromptBuilder
 from src.prompt_engineering.prompt_builder import TopicSelectionParser
 from langchain.output_parsers import PydanticOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from src.constant.constant import *
+import logging
+logger = logging.getLogger(__name__)
 
 
 class RAGNode:
@@ -15,10 +18,15 @@ class RAGNode:
         self.config = ConfigEntity()
 
     def format_doc(self, docs):
+        logger.info(EXECUTION_START)
+        logger.info(EXECUTION_END)
+
         return '\n\n'.join(doc.page_content for doc in docs)
 
     def rag_response(self, state: AgentState):
         try:
+            logger.info(EXECUTION_START)
+
             question = state['messages'][0].content
             retriever = RetrieverBuilder().build()
             prompt_builder_obj = PromptBuilder(retriever)
@@ -42,6 +50,8 @@ class RAGNode:
                      'last_route': 'rag',
                      'retry_count': 0
                      }
+
+            logger.info(EXECUTION_END)
 
             return state
 

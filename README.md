@@ -22,16 +22,8 @@ It is built using **LangGraph**, **LangChain**, **Gemini 1.5 Flash**, and **Pine
 ## 🧱 Architecture Overview
 
 ```mermaid
-graph TD
-    A[START] --> B[Supervisor Node]
-    B -->|rag| C[RAG Retrieval + Gemini]
-    B -->|llm| D[LLM Query with Gemini]
-    B -->|web| E[DuckDuckGo Search]
-    C --> F[Validation Router]
-    D --> F
-    E --> F
-    F -->|Pass| G[END]
-    F -->|Fail| H[Back to Last Route]
+## 🔁 Agentic RAG Workflow
+
+![Agentic Graph Architecture](./docs/images/agentic_graph.png)
 ```
 
-work in progress....

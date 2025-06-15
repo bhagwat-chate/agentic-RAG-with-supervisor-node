@@ -8,9 +8,12 @@ from src.handlers.loaders.pdf_loader import PDFLoaderHandler
 from src.handlers.chunking.text_splitter import TextSplitter
 from src.llm_clients.embedding.google_embedder import GoogleEmbedder
 from src.prompt_engineering.prompt_builder import PromptBuilder
-
+from src.constant.constant import *
+import logging
 import warnings
+
 warnings.filterwarnings('ignore')
+logger = logging.getLogger(__name__)
 
 
 class RAGService:
@@ -21,29 +24,34 @@ class RAGService:
 
     def run_rag_pipeline(self):
         try:
+            logger.info(EXECUTION_START)
+
             pdf_loader_obj = PDFLoaderHandler(file_path=self.file_path)
             text = pdf_loader_obj.load_corpus()
-            print('✅ complete: data load')
+            logger.info('✅ complete: data load')
 
             text_splitter_obj = TextSplitter(corpus_str=text)
             chunks_lst = text_splitter_obj.split()
-            print('✅ complete: text clean and split')
+            logger.info('✅ complete: text clean and split')
 
             google_embeder_obj = GoogleEmbedder()
             document_lst, embedding_lst, google_embedding = google_embeder_obj.embed(chunks=chunks_lst)
-            print('✅ complete: google embedding')
+            logger.info('✅ complete: google embedding')
 
             pinecone_loader_obj = PineconeLoader()
             pinecone_loader_obj.store(chunks=chunks_lst, document_lst=document_lst, embedding_lst=embedding_lst, embedding_obj=google_embedding)
-            print('✅ complete: embedding load into vector store (pinecone)')
+            logger.info('✅ complete: embedding loaded into vector store (pinecone)')
 
             retriever_builder_obj = RetrieverBuilder()
             retriever = retriever_builder_obj.build()
-            print('✅ complete: retriever created')
+            logger.info('✅ complete: retriever created')
 
             prompt_builder_obj = PromptBuilder(retriever)
             prompt_builder_obj.build()
-            print('✅ complete: prompt creation')
+            logger.info('✅ complete: prompt creation')
+
+            logger.info(EXECUTION_END)
 
         except Exception as e:
+            logger.error(f"ERROR: {e}")
             raise e
